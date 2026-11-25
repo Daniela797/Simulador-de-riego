@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador Académico - Práctica de Laboratorio 03: Capacidad de Campo, Punto de Marchitez Permanente y Ecotoxicología</title>
+  <meta name="description" content="Simulador Académico interactivo de Biología para Ingenieros sobre Capacidad de Campo, Punto de Marchitez Permanente (PMP), Volumen Infiltrado y Ecotoxicología Salina.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Encabezado Institucional -->
+  <header class="app-header">
+    <div class="container">
+      <div class="header-inner">
+        <div class="header-brand">
+          <div class="header-kicker">
+            <span>Fundación Universidad de América</span>
+            <span>•</span>
+            <span>Biología para Ingenieros</span>
+            <span>•</span>
+            <span>Práctica de Laboratorio 03</span>
+          </div>
+          <h1 class="header-title">
+            Simulador Académico — Capacidad de Campo, Punto de Marchitez Permanente y Ecotoxicología
+          </h1>
+          <p class="header-subtitle">
+            Análisis gravimétrico, retención hídrica, potencial osmótico y bioensayo ecotoxicológico
+          </p>
+        </div>
+
+        <div class="header-active-pill" title="Experimento cargado actualmente en tablas y gráficos">
+          <div class="pulse-dot"></div>
+          <div style="min-width: 0;">
+            <div class="pill-label">Experimento Activo</div>
+            <div id="header-active-title" class="pill-title">Grupo Base - Tierra Negra (NaCl 2%)</div>
+            <div id="header-active-meta" class="pill-meta">Tierra negra • NaCl 2%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de Navegación de 6 Pestañas -->
+    <nav class="nav-bar" aria-label="Navegación principal">
+      <div class="container">
+        <div class="nav-tabs" role="tablist">
+          <button type="button" class="tab-btn active" data-tab="datos" role="tab">
+            1. Diseño y Datos Experimentales
+          </button>
+          <button type="button" class="tab-btn" data-tab="simulador" role="tab">
+            2. Simulador Interactivo
+          </button>
+          <button type="button" class="tab-btn" data-tab="matematico" role="tab">
+            3. Análisis Matemático
+          </button>
+          <button type="button" class="tab-btn" data-tab="ecotoxicologia" role="tab">
+            4. Análisis Ecotoxicológico e Hídrico
+          </button>
+          <button type="button" class="tab-btn" data-tab="experimentos" role="tab">
+            5. Mis Experimentos y Galería <span class="tab-badge-new">Nuevo</span>
+          </button>
+          <button type="button" class="tab-btn" data-tab="referencias" role="tab">
+            6. Referencias
+          </button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="app-main">
+    <div class="container">
+
+      <!-- ========================================================= -->
+      <!-- PESTAÑA 1: DISEÑO Y DATOS EXPERIMENTALES                  -->
+      <!-- ========================================================= -->
+      <section id="panel-datos" class="tab-panel active stack-lg">
+
+        <!-- Selector rápido de experimento activo -->
+        <div class="experiment-toolbar">
+          <div class="toolbar-select-group">
+            <label for="active-experiment-select">Experimento visualizado:</label>
+            <select id="active-experiment-select" class="select-control"></select>
+          </div>
+          <div class="toolbar-actions">
+            <button type="button" id="btn-sync-simulator" class="btn btn-sm btn-primary-soft">
+              Simular estos parámetros
+            </button>
+            <button type="button" id="btn-go-experiments" class="btn btn-sm btn-primary">
+              + Subir mi experimento
+            </button>
+            <button type="button" id="btn-export-active-json" class="btn btn-sm btn-outline">
+              Exportar JSON
+            </button>
+            <button type="button" id="btn-print-report" class="btn btn-sm btn-outline">
+              Imprimir / PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Parámetros Experimentales -->
+        <div>
+          <h2 class="section-heading">
+            <span class="heading-bar"></span>
+            Parámetros del Diseño Experimental
+          </h2>
+          <div class="params-grid">
+            <div class="param-card">
+              <div class="param-icon param-icon-amber">🌱</div>
+              <div class="param-label">Sustrato y Grupo</div>
+              <div id="param-substrate" class="param-value">Tierra negra</div>
+              <div id="param-substrate-sub" class="param-sub">Grupo Base</div>
+            </div>
+            <div class="param-card">
+              <div class="param-icon param-icon-sky">🧪</div>
+              <div class="param-label">Número de Réplicas</div>
+              <div id="param-replicas" class="param-value">6 Vasos Totales</div>
+              <div id="param-replicas-sub" class="param-sub">3 Control y 3 Estrés</div>
+            </div>
+            <div class="param-card">
+              <div class="param-icon param-icon-emerald">🫘</div>
+              <div class="param-label">Tipo y Densidad de Semillas</div>
+              <div id="param-seeds" class="param-value">Lentejas (Lens culinaris)</div>
+              <div id="param-seeds-sub" class="param-sub">3 semillas/vaso (18 totales)</div>
+            </div>
+            <div class="param-card">
+              <div class="param-icon param-icon-blue">💧</div>
+              <div class="param-label">Volumen de Saturación</div>
+              <div id="param-volume" class="param-value">250 ml / muestra</div>
+              <div id="param-volume-sub" class="param-sub">Balance gravimétrico 1h y 24h</div>
+            </div>
+            <div class="param-card">
+              <div class="param-icon param-icon-rose">🧂</div>
+              <div class="param-label">Concentración del Efluente</div>
+              <div id="param-effluent" class="param-value">NaCl 2%</div>
+              <div id="param-effluent-sub" class="param-sub">Ψs teórico = -1.69 MPa</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de Masas y Cálculos -->
+        <div class="card card-flush">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Tabla de Masas, Retención Hídrica y Germinación</h2>
+              <p class="card-subtitle">Cálculos automáticos de Masa Inicial, CC (g/ml), %CC, Volumen Infiltrado (ml), %G y PMP.</p>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+              <span class="badge-success">★ Emergencia radicular / germinación</span>
+              <span class="badge-amber">⚠ Anomalía experimental</span>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Muestra</th>
+                  <th>Tratamiento</th>
+                  <th class="num-col">M<sub>vaso</sub> (g)</th>
+                  <th class="num-col">M<sub>suelo</sub> (g)</th>
+                  <th class="num-col">M<sub>inicial</sub> (g)</th>
+                  <th class="num-col">M<sub>1h</sub> (g)</th>
+                  <th class="num-col">M<sub>24h</sub> (g)</th>
+                  <th class="num-col">CC (g/ml)</th>
+                  <th class="num-col">%CC</th>
+                  <th class="num-col" title="Volumen Infiltrado / Percolado (ml)">V. Infil. (ml)</th>
+                  <th class="center-col">Germinación</th>
+                  <th class="center-col">PMP</th>
+                  <th>Estado / Observación</th>
+                </tr>
+              </thead>
+              <tbody id="results-table-body"></tbody>
+            </table>
+          </div>
+
+          <div class="table-footer-notes">
+            <div id="active-pmp-note">
+              <strong>PMP: No Determinado (N/D)</strong>
+            </div>
+            <div>
+              <strong>Conclusión / Observaciones:</strong> <span id="active-observations-text"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráficos Comparativos (Chart.js) -->
+        <div class="charts-grid">
+          <div class="card chart-span-12">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem;">
+              <div>
+                <h2 class="card-title">Capacidad de Campo (%CC) por Muestra Individual</h2>
+                <p class="card-subtitle">Pasa el cursor sobre cada barra para inspeccionar CC (g/ml), Volumen Infiltrado y Germinación.</p>
+              </div>
+              <div class="chart-legend-strip">
+                <span><span class="legend-dot" style="background:#0284c7;"></span>Control (Agua)</span>
+                <span><span class="legend-dot" style="background:#059669;"></span>Control con germinación</span>
+                <span><span class="legend-dot" style="background:#e11d48;"></span>Estrés (NaCl)</span>
+                <span><span class="legend-dot" style="background:#d97706;"></span>Anomalía experimental</span>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="chart-replicates-cc"></canvas>
+            </div>
+          </div>
+
+          <div class="card chart-span-6">
+            <h2 class="card-title">Comparativo %CC Promedio: Control vs. Estrés</h2>
+            <p class="card-subtitle">Retención gravimétrica promedio a las 24 horas de drenaje.</p>
+            <div class="chart-canvas-wrap">
+              <canvas id="chart-group-cc"></canvas>
+            </div>
+          </div>
+
+          <div class="card chart-span-6">
+            <h2 class="card-title">Comparativo % de Germinación: Control vs. Estrés</h2>
+            <p class="card-subtitle">Respuesta ecotoxicológica del bioindicador frente al tratamiento.</p>
+            <div class="chart-canvas-wrap">
+              <canvas id="chart-group-germination"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vista rápida de fotografías si el experimento activo tiene imágenes -->
+        <div id="tab1-photos-card" class="card hidden">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem;">
+            <div>
+              <h2 class="card-title">Evidencia Fotográfica del Experimento</h2>
+              <p class="card-subtitle">Haz clic en cualquier imagen para ampliarla.</p>
+            </div>
+          </div>
+          <div id="tab1-photos-grid" class="mini-photos-grid"></div>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- PESTAÑA 2: SIMULADOR INTERACTIVO                          -->
+      <!-- ========================================================= -->
+      <section id="panel-simulador" class="tab-panel stack-lg">
+        <div class="sim-layout">
+
+          <!-- Panel de Controles -->
+          <div class="card sim-controls">
+            <div style="border-bottom:1px solid var(--border-color); padding-bottom:0.75rem;">
+              <h2 class="card-title">Controles del Microcosmos Experimental</h2>
+              <p class="card-subtitle">Ajusta tratamiento, concentración salina, volumen de agua y tiempo de drenaje.</p>
+            </div>
+
+            <!-- Tipo de Tratamiento -->
+            <div>
+              <div class="control-label-row">
+                <label>Tipo de Tratamiento</label>
+              </div>
+              <div class="treatment-toggle">
+                <button type="button" id="sim-treat-control" class="treat-btn">💧 Control (Agua)</button>
+                <button type="button" id="sim-treat-stress" class="treat-btn active-stress">🧂 Estrés (NaCl)</button>
+              </div>
+            </div>
+
+            <!-- Concentración NaCl -->
+            <div id="sim-nacl-group">
+              <div class="control-label-row">
+                <label for="sim-nacl">Concentración de Sal (NaCl % p/v)</label>
+                <span id="val-nacl" class="badge-rose">2.0% NaCl</span>
+              </div>
+              <input type="range" id="sim-nacl" class="range-input range-rose" min="0.1" max="4.0" step="0.1" value="2.0">
+              <div class="preset-row">
+                <button type="button" class="preset-chip" data-sim-nacl="0">Agua 0%</button>
+                <button type="button" class="preset-chip" data-sim-nacl="0.5">Guía 0.5%</button>
+                <button type="button" class="preset-chip" data-sim-nacl="1.0">Moderado 1.0%</button>
+                <button type="button" class="preset-chip" data-sim-nacl="2.0">Base 2.0%</button>
+                <button type="button" class="preset-chip" data-sim-nacl="3.5">Severo 3.5%</button>
+              </div>
+            </div>
+
+            <!-- Textura del Sustrato -->
+            <div>
+              <div class="control-label-row">
+                <label for="sim-soil">Textura del Suelo (100 g seco)</label>
+              </div>
+              <select id="sim-soil" class="field-input">
+                <option value="negra" selected>Tierra Negra (Franco-Orgánico — Base Lab 03)</option>
+                <option value="arenoso">Suelo Arenoso (Drenaje rápido, baja retención)</option>
+                <option value="arcilloso">Suelo Arcilloso (Alta retención, alto PMP)</option>
+              </select>
+            </div>
+
+            <!-- Volumen de Agua / Efluente -->
+            <div>
+              <div class="control-label-row">
+                <label for="sim-water">Volumen de Agua / Efluente Aplicado</label>
+                <span id="val-water" class="badge-sky">250 ml</span>
+              </div>
+              <input type="range" id="sim-water" class="range-input range-sky" min="10" max="350" step="5" value="250">
+              <div class="preset-row">
+                <button type="button" class="preset-chip" data-sim-water="15">Parcial 15 ml</button>
+                <button type="button" class="preset-chip" data-sim-water="100">100 ml</button>
+                <button type="button" class="preset-chip" data-sim-water="250">Estándar 250 ml</button>
+                <button type="button" class="preset-chip" data-sim-water="350">Exceso 350 ml</button>
+              </div>
+            </div>
+
+            <!-- Tiempo de Drenaje (horas) -->
+            <div>
+              <div class="control-label-row">
+                <label for="sim-drain-hours">Tiempo de Drenaje Gravitacional</label>
+                <span id="val-drain-hours" class="badge-sky">24 h</span>
+              </div>
+              <input type="range" id="sim-drain-hours" class="range-input range-sky" min="0" max="24" step="1" value="24">
+              <div class="preset-row">
+                <button type="button" class="preset-chip" data-sim-drain="0">0 h (Saturación)</button>
+                <button type="button" class="preset-chip" data-sim-drain="1">1 h</button>
+                <button type="button" class="preset-chip" data-sim-drain="2">2 h</button>
+                <button type="button" class="preset-chip" data-sim-drain="24">24 h (CC)</button>
+              </div>
+            </div>
+
+            <!-- Días tras Siembra y Semillas -->
+            <div style="border-top:1px solid var(--border-color); padding-top:0.85rem;">
+              <div class="control-label-row">
+                <label for="sim-day">Evolución Post-Siembra (Germinación y PMP)</label>
+                <span id="val-day" class="badge-success">Día 4</span>
+              </div>
+              <input type="range" id="sim-day" class="range-input" min="0" max="14" step="1" value="4">
+              <div class="sim-scale-ticks">
+                <span>Día 0 (Drenaje)</span>
+                <span>Día 1 (CC)</span>
+                <span>Día 7</span>
+                <span>Día 14 (PMP)</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="control-label-row">
+                <label for="sim-seeds">Semillas por Vaso (Lens culinaris)</label>
+                <span id="val-seeds" class="badge-muted">3 semillas</span>
+              </div>
+              <input type="range" id="sim-seeds" class="range-input" min="1" max="5" step="1" value="3">
+            </div>
+
+            <div style="display:flex; gap:0.65rem; padding-top:0.3rem;">
+              <button type="button" id="btn-sim-play" class="btn btn-primary" style="flex:1;">
+                <span>▶ Reproducir ciclo completo</span>
+              </button>
+              <button type="button" id="btn-sim-reset" class="btn btn-outline">
+                Reiniciar
+              </button>
+            </div>
+          </div>
+
+          <!-- Visualización Dinámica y Telemetría -->
+          <div class="stack-lg">
+            <div class="card sim-stage-card">
+              <!-- SVG Vaso + Probeta Colectora -->
+              <div class="cup-visual-wrap">
+                <div id="sim-stage-badge" class="sim-stage-badge badge-danger">
+                  Inhibición Osmótica Severa
+                </div>
+                <svg viewBox="0 0 260 365" class="cup-svg" role="img" aria-label="Visualización dinámica del vaso con suelo, semillas y drenaje">
+                  <defs>
+                    <clipPath id="sim-cup-clip">
+                      <polygon points="52,62 208,62 186,225 74,225" />
+                    </clipPath>
+                    <clipPath id="sim-beaker-clip">
+                      <rect x="75" y="280" width="110" height="62" rx="6" />
+                    </clipPath>
+                  </defs>
+
+                  <!-- Etiqueta de agua retenida -->
+                  <text id="svg-cup-label" x="130" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">Retenido: 15.0 ml</text>
+
+                  <!-- Contenido del vaso (suelo, humedad, sal) -->
+                  <g clip-path="url(#sim-cup-clip)">
+                    <rect id="svg-soil-rect" x="45" y="102" width="170" height="130" fill="#453226" />
+                    <rect id="svg-moisture-rect" x="45" y="102" width="170" height="130" fill="#38bdf8" opacity="0.28" />
+                    <g id="svg-salt-crystals" opacity="0.85">
+                      <circle cx="80" cy="118" r="2" fill="#ffffff" />
+                      <circle cx="115" cy="134" r="1.8" fill="#ffffff" />
+                      <circle cx="155" cy="116" r="2.2" fill="#ffffff" />
+                      <circle cx="176" cy="144" r="1.8" fill="#ffffff" />
+                      <circle cx="96" cy="162" r="2" fill="#ffffff" />
+                      <circle cx="138" cy="176" r="1.8" fill="#ffffff" />
+                      <circle cx="164" cy="196" r="2" fill="#ffffff" />
+                      <circle cx="112" cy="208" r="1.8" fill="#ffffff" />
+                    </g>
+                  </g>
+
+                  <!-- Plantas y semillas -->
+                  <g id="svg-plants-group"></g>
+
+                  <!-- Vaso plástico transparente -->
+                  <polygon points="50,58 210,58 188,227 72,227" fill="rgba(255,255,255,0.10)" stroke="#64748b" stroke-width="2.4" stroke-linejoin="round" />
+                  <ellipse cx="130" cy="58" rx="80" ry="7.5" fill="none" stroke="#64748b" stroke-width="2.2" />
+
+                  <!-- Orificios basales -->
+                  <circle cx="96" cy="227" r="2.5" fill="#334155" />
+                  <circle cx="130" cy="227" r="2.5" fill="#334155" />
+                  <circle cx="164" cy="227" r="2.5" fill="#334155" />
+
+                  <!-- Gotas animadas de drenaje -->
+                  <g id="svg-drops" opacity="0">
+                    <path d="M96,232 Q91,242 96,247 Q101,242 96,232 Z" fill="#38bdf8" class="animate-drop-1" />
+                    <path d="M130,235 Q125,245 130,250 Q135,245 130,235 Z" fill="#0ea5e9" class="animate-drop-2" />
+                    <path d="M164,232 Q159,242 164,247 Q169,242 164,232 Z" fill="#38bdf8" class="animate-drop-3" />
+                  </g>
+
+                  <!-- Vaso colector / probeta graduada inferior -->
+                  <g clip-path="url(#sim-beaker-clip)">
+                    <rect id="svg-beaker-liquid" x="75" y="295" width="110" height="47" fill="rgba(244, 63, 94, 0.45)" />
+                  </g>
+                  <rect x="75" y="280" width="110" height="62" rx="6" fill="none" stroke="#64748b" stroke-width="2" />
+                  <line x1="75" y1="298" x2="86" y2="298" stroke="#94a3b8" stroke-width="1.2" />
+                  <line x1="75" y1="316" x2="86" y2="316" stroke="#94a3b8" stroke-width="1.2" />
+                  <line x1="75" y1="332" x2="86" y2="332" stroke="#94a3b8" stroke-width="1.2" />
+                  <text id="svg-beaker-label" x="130" y="358" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">Infiltrado: 235.0 ml</text>
+                </svg>
+              </div>
+
+              <!-- Métricas en Tiempo Real -->
+              <div class="sim-metrics-grid">
+                <div class="sim-metric-box sim-metric-sky">
+                  <div class="sim-metric-label">Retención Hídrica (% Humedad)</div>
+                  <div id="out-cc" class="sim-metric-value">15.00%</div>
+                  <div id="out-moisture" class="sim-metric-note">Retenido actual: 15.00 g/ml</div>
+                </div>
+
+                <div class="sim-metric-box sim-metric-blue">
+                  <div class="sim-metric-label">Volumen Infiltrado / Drenado</div>
+                  <div id="out-infiltrated" class="sim-metric-value">235.0 ml</div>
+                  <div id="out-infiltrated-note" class="sim-metric-note">Percolado de 250 ml aplicados</div>
+                </div>
+
+                <div class="sim-metric-box sim-metric-rose">
+                  <div class="sim-metric-label">Potencial Osmótico (Ψs)</div>
+                  <div id="out-osmotic" class="sim-metric-value">-1.69 MPa</div>
+                  <div id="out-osmotic-note" class="sim-metric-note">Bloqueo osmótico severo</div>
+                </div>
+
+                <div class="sim-metric-box sim-metric-emerald">
+                  <div class="sim-metric-label">Estado de Germinación (%G)</div>
+                  <div id="out-germ" class="sim-metric-value">0.0%</div>
+                  <div id="out-germ-detail" class="sim-metric-note">0 de 3 semillas germinadas</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sim-diagnosis-card">
+              <h3>Diagnóstico Hídrico y Ecotoxicológico en Tiempo Real</h3>
+              <p id="sim-diagnosis"></p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- PESTAÑA 3: ANÁLISIS MATEMÁTICO                            -->
+      <!-- ========================================================= -->
+      <section id="panel-matematico" class="tab-panel stack-lg">
+
+        <div class="two-col-grid">
+          <!-- Fórmula 1: Capacidad de Campo -->
+          <div class="card">
+            <h2 class="card-title">1. Capacidad de Campo (CC en g/ml y %CC)</h2>
+            <p class="card-subtitle">Cuantificación gravimétrica del agua retenida tras 24 h de drenaje gravitacional libre (ρ<sub>agua</sub> ≈ 1.0 g/ml) <button type="button" class="cite-ref" data-cite="2">[2]</button><button type="button" class="cite-ref" data-cite="5">[5]</button><button type="button" class="cite-ref" data-cite="12">[12]</button>.</p>
+            <div class="formula-box">
+              <p><strong>Masa inicial del sistema:</strong> &nbsp; M<sub>inicial</sub> = M<sub>vaso</sub> + M<sub>suelo</sub></p>
+              <p><strong>Capacidad de Campo (g o ml):</strong> &nbsp; CC = M<sub>24h</sub> − M<sub>inicial</sub></p>
+              <p>
+                <strong>Porcentaje de CC:</strong> &nbsp; %CC =
+                <span class="frac"><span class="frac-num">CC</span><span class="frac-den">M<sub>suelo</sub></span></span>
+                × 100
+              </p>
+            </div>
+            <p class="text-xs text-muted">
+              Representa el límite superior del agua aprovechable retenida en los microporos y mesoporos del sustrato (tensión matricial típica ≈ −0.033 MPa o 0.33 bar) una vez cesa el drenaje por gravedad <button type="button" class="cite-ref" data-cite="2">[2]</button><button type="button" class="cite-ref" data-cite="12">[12]</button>.
+            </p>
+          </div>
+
+          <!-- Fórmula 2: Volumen Infiltrado -->
+          <div class="card">
+            <h2 class="card-title">2. Volumen Infiltrado y Drenaje Gravitacional</h2>
+            <p class="card-subtitle">Balance hídrico de columna abierta entre el volumen de efluente aplicado y la fracción retenida a las 24 horas <button type="button" class="cite-ref" data-cite="5">[5]</button>.</p>
+            <div class="formula-box">
+              <p><strong>Volumen Infiltrado / Percolado (ml):</strong> &nbsp; V<sub>infiltrado</sub> = V<sub>aplicado</sub> − CC<sub>(ml)</sub></p>
+              <p><strong>Drenaje intermedio (1 h → 24 h):</strong> &nbsp; ΔM<sub>drenaje</sub> = M<sub>1h</sub> − M<sub>24h</sub></p>
+            </div>
+            <p class="text-xs text-muted">
+              En muestras de 100 g saturadas con 250 ml, el volumen que supera el almacenamiento capilar percola rápidamente a través de los macroporos como agua gravitacional <button type="button" class="cite-ref" data-cite="2">[2]</button><button type="button" class="cite-ref" data-cite="5">[5]</button>.
+            </p>
+          </div>
+
+          <!-- Fórmula 3: Porcentaje de Germinación -->
+          <div class="card">
+            <h2 class="card-title">3. Porcentaje de Germinación (%G)</h2>
+            <p class="card-subtitle">Índice de bioensayo ecotoxicológico para evaluar viabilidad y tolerancia osmótica de <em>Lens culinaris</em> <button type="button" class="cite-ref" data-cite="8">[8]</button><button type="button" class="cite-ref" data-cite="9">[9]</button>.</p>
+            <div class="formula-box">
+              <p>
+                %G =
+                <span class="frac"><span class="frac-num">N<sub>semillas germinadas</sub></span><span class="frac-den">N<sub>semillas sembradas</sub></span></span>
+                × 100
+              </p>
+            </div>
+            <p class="text-xs text-muted">
+              Se evalúa por réplica individual (ej. Vaso 3 = 1/3 = 33.33%) y por grupo experimental (Control = 1/9 = 11.11% vs. Estrés NaCl 2% = 0/9 = 0.00%), permitiendo cuantificar la inhibición aguda <button type="button" class="cite-ref" data-cite="8">[8]</button><button type="button" class="cite-ref" data-cite="9">[9]</button>.
+            </p>
+          </div>
+
+          <!-- Fórmula 4: Punto de Marchitez Permanente y Van 't Hoff -->
+          <div class="card">
+            <h2 class="card-title">4. Punto de Marchitez Permanente (PMP) y Potencial Osmótico</h2>
+            <p class="card-subtitle">Límite inferior de agua disponible (≈ −1.5 MPa) y presión osmótica del efluente (Van 't Hoff) <button type="button" class="cite-ref" data-cite="1">[1]</button><button type="button" class="cite-ref" data-cite="7">[7]</button><button type="button" class="cite-ref" data-cite="12">[12]</button>.</p>
+            <div class="formula-box">
+              <p>
+                %PMP =
+                <span class="frac"><span class="frac-num">M<sub>suelo en PMP</sub> − M<sub>suelo seco</sub></span><span class="frac-den">M<sub>suelo seco</sub></span></span>
+                × 100
+              </p>
+              <p><strong>Agua Disponible (AD):</strong> &nbsp; AD = %CC − %PMP</p>
+              <p><strong>Potencial Osmótico:</strong> &nbsp; Ψ<sub>s</sub> = −i · C · R · T</p>
+            </div>
+            <p class="text-xs text-muted">
+              Con NaCl al 2% p/v (20 g/L ≈ 0.3422 mol/L, i = 2, R = 0.008314 MPa·L/mol·K, T = 297.15 K): <strong>Ψ<sub>s</sub> ≈ −1.69 MPa</strong>.
+              De acuerdo con el criterio clásico de Veihmeyer y Hendrickson <button type="button" class="cite-ref" data-cite="12">[12]</button>, el PMP requiere pérdida irreversible de turgencia foliar; por ello, en el Experimento Base se reporta como <strong>No Determinado (N/D)</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Bloque de ejemplo calculado dinámicamente según experimento activo -->
+        <div id="math-dynamic-example" class="worked-example-card"></div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- PESTAÑA 4: ANÁLISIS ECOTOXICOLÓGICO E HÍDRICO             -->
+      <!-- ========================================================= -->
+      <section id="panel-ecotoxicologia" class="tab-panel stack-lg">
+        <div class="two-col-grid">
+          <div class="card">
+            <span class="badge-rose">Ecotoxicología Salina</span>
+            <h2 class="card-title" style="margin-top:0.5rem;">Efecto Osmótico y Toxicidad Iónica del NaCl al 2%</h2>
+            <p class="card-subtitle">Sustento fisiológico de la inhibición total (0%) observada en <em>Lens culinaris</em> <button type="button" class="cite-ref" data-cite="7">[7]</button><button type="button" class="cite-ref" data-cite="8">[8]</button><button type="button" class="cite-ref" data-cite="9">[9]</button>.</p>
+
+            <div class="eco-point eco-point-rose">
+              <span class="eco-num">01</span>
+              <div>
+                <strong>Barrera Osmótica Severa (−1.69 MPa):</strong> Según el modelo bifásico de Munns y Tester <button type="button" class="cite-ref" data-cite="7">[7]</button>, la fase osmótica inicial reduce inmediatamente la absorción de agua. A NaCl 2% (≈ 342 mM), el potencial osmótico cae por debajo del umbral de imbibición radicular descrito para lenteja por Al-Quraan et al. <button type="button" class="cite-ref" data-cite="8">[8]</button> y Muscolo et al. <button type="button" class="cite-ref" data-cite="10">[10]</button>.
+              </div>
+            </div>
+            <div class="eco-point eco-point-rose">
+              <span class="eco-num">02</span>
+              <div>
+                <strong>Toxicidad Específica de Na<sup>+</sup> y Cl<sup>−</sup>:</strong> En la segunda fase descrita en <button type="button" class="cite-ref" data-cite="7">[7]</button>, la entrada excesiva de Na<sup>+</sup> compite con K<sup>+</sup>, altera el potencial de membrana plasmática, inhibe enzimas hidrolíticas de reserva seminal y desencadena daño oxidativo celular <button type="button" class="cite-ref" data-cite="3">[3]</button><button type="button" class="cite-ref" data-cite="4">[4]</button><button type="button" class="cite-ref" data-cite="8">[8]</button>.
+              </div>
+            </div>
+            <div class="eco-point eco-point-emerald">
+              <span class="eco-num">03</span>
+              <div>
+                <strong>Corroboración en Bioensayo de Suelo:</strong> Rahman et al. <button type="button" class="cite-ref" data-cite="9">[9]</button> demostraron en ensayos en maceta con gradientes de 0% a 4% de NaCl una caída significativa (p &lt; 0.01) en la germinación de <em>Lens culinaris</em> desde el 2%, validando el 0/9 registrado en nuestros vasos 4, 5 y 6 como respuesta ecotoxicológica reproducible.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <span class="badge-amber">Hidrología y Edafología</span>
+            <h2 class="card-title" style="margin-top:0.5rem;">Influencia de la Textura del Suelo en Retención y Drenaje</h2>
+            <p class="card-subtitle">Dinámica capilar de la Tierra Negra frente a evaporación y sodicidad <button type="button" class="cite-ref" data-cite="2">[2]</button><button type="button" class="cite-ref" data-cite="5">[5]</button><button type="button" class="cite-ref" data-cite="11">[11]</button>.</p>
+
+            <div class="eco-point eco-point-sky">
+              <span class="eco-num">A</span>
+              <div>
+                <strong>Correlación %CC y Emergencia Radicular:</strong> Brady y Weil <button type="button" class="cite-ref" data-cite="2">[2]</button> señalan que la fracción húmico-franca regula el agua disponible en mesoporos. En el grupo Control, el <strong>Vaso 3</strong> alcanzó la mayor retención (<strong>17.15%</strong> frente a 11.88% y 15.89%), explicando por qué fue la única réplica capaz de sostener la imbibición hasta la protrusión radicular <button type="button" class="cite-ref" data-cite="10">[10]</button>.
+              </div>
+            </div>
+            <div class="eco-point eco-point-amber">
+              <span class="eco-num">B</span>
+              <div>
+                <strong>Evaporación en Microcosmos y PMP N/D:</strong> Como establece Hillel <button type="button" class="cite-ref" data-cite="5">[5]</button>, columnas someras (~100 g) sin cubierta sufren pérdidas evaporativas rápidas antes de estabilizar el sistema radicular. Sin plántulas con hojas verdaderas, no se cumple la condición fisiológica de marchitez permanente de Veihmeyer y Hendrickson <button type="button" class="cite-ref" data-cite="12">[12]</button> (PMP = N/D).
+              </div>
+            </div>
+            <div class="eco-point eco-point-sky">
+              <span class="eco-num">C</span>
+              <div>
+                <strong>Dispersión Sódica de Coloides:</strong> Rengasamy y Olsson <button type="button" class="cite-ref" data-cite="11">[11]</button> explican que altas concentraciones de Na<sup>+</sup> expanden la doble capa difusa de las arcillas, promoviendo la dispersión coloidal, el sellado de poros conductores y alteraciones drásticas en la conductividad hidráulica durante el drenaje.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Análisis de Anomalías Experimentales -->
+        <div class="card">
+          <span class="badge-amber">Control de Calidad Experimental</span>
+          <h2 class="card-title" style="margin-top:0.5rem;">Diagnóstico de Anomalías y Criterio Metrológico</h2>
+          <p class="card-subtitle">Interpretación física y edáfica de las desviaciones en el grupo Estrés (NaCl 2%).</p>
+
+          <div class="two-col-grid" style="margin-top:0.75rem;">
+            <div class="eco-point eco-point-amber" style="margin-top:0;">
+              <span class="eco-num">⚠</span>
+              <div>
+                <strong>Vaso 5 — Ganancia de Masa Anómala (+3.2519 g):</strong> La masa pasó de <strong>111.8380 g</strong> (1 h) a <strong>115.0899 g</strong> (24 h). Por conservación de masa en un lisímetro abierto bajo drenaje gravitacional libre <button type="button" class="cite-ref" data-cite="5">[5]</button>, el sistema solo puede perder agua (ΔM ≤ 0), por lo que este dato corresponde a error de lectura, transcripción o deriva de tara en balanza analítica.
+              </div>
+            </div>
+            <div class="eco-point eco-point-amber" style="margin-top:0;">
+              <span class="eco-num">⚠</span>
+              <div>
+                <strong>Vaso 6 — Retención Atípica (24.04% CC):</strong> Retuvo <strong>24.0569 g</strong> de solución (más del doble que el Vaso 4 con 9.50%). Consistente con obstrucción parcial de los orificios basales por migración de partículas finas dispersadas por Na<sup>+</sup> <button type="button" class="cite-ref" data-cite="11">[11]</button> o compactación heterogénea que redujo la macroporosidad drenable <button type="button" class="cite-ref" data-cite="2">[2]</button>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- PESTAÑA 5: MIS EXPERIMENTOS Y GALERÍA (CRUD + FOTOS)      -->
+      <!-- ========================================================= -->
+      <section id="panel-experimentos" class="tab-panel stack-lg">
+
+        <!-- Listado / Selector de Experimentos Guardados -->
+        <div class="card">
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem;">
+            <div>
+              <h2 class="card-title">Experimentos Guardados</h2>
+              <p class="card-subtitle">Alterna entre el Experimento Base y tus registros guardados para actualizar tablas, gráficos y galería.</p>
+            </div>
+            <span id="storage-mode-badge" class="badge-sky">Persistencia: IndexedDB activa</span>
+          </div>
+          <div id="saved-experiments-list" class="saved-experiments-grid"></div>
+        </div>
+
+        <!-- Galería Fotográfica del Experimento Activo -->
+        <div class="card">
+          <div>
+            <h2 class="card-title">Galería Fotográfica — <span id="gallery-active-title">Grupo Base</span></h2>
+            <p class="card-subtitle">Haz clic en cualquier fotografía para inspeccionarla en pantalla completa (Lightbox).</p>
+          </div>
+          <div id="active-experiment-gallery" class="gallery-grid"></div>
+        </div>
+
+        <!-- Formulario para Agregar / Editar Experimento -->
+        <div id="experiment-form-card" class="card">
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem; border-bottom:1px solid var(--border-color); padding-bottom:0.85rem; margin-bottom:1rem;">
+            <div>
+              <h2 id="form-mode-title" class="card-title">Registrar Nuevo Experimento</h2>
+              <p class="card-subtitle">Ingresa tus datos de laboratorio; las masas, %CC, Volumen Infiltrado y promedios se calculan en tiempo real.</p>
+            </div>
+            <button type="button" id="btn-cancel-edit" class="btn btn-sm btn-outline hidden">Cancelar edición</button>
+          </div>
+
+          <div id="form-error-banner" class="form-error-banner hidden" role="alert"></div>
+
+          <form id="experiment-form" novalidate>
+            <div class="form-grid">
+              <div class="field-group">
+                <label for="exp-student">Nombre del Grupo / Estudiante *</label>
+                <input type="text" id="exp-student" class="field-input" placeholder="Ej. Grupo 04 - María López" required>
+              </div>
+              <div class="field-group">
+                <label for="exp-title">Título del Experimento (opcional)</label>
+                <input type="text" id="exp-title" class="field-input" placeholder="Se autogenera si se deja vacío">
+              </div>
+              <div class="field-group">
+                <label for="exp-date">Fecha *</label>
+                <input type="date" id="exp-date" class="field-input" required>
+              </div>
+              <div class="field-group">
+                <label for="exp-substrate">Tipo de Sustrato *</label>
+                <input type="text" id="exp-substrate" list="substrates-list" class="field-input" placeholder="Ej. Tierra negra" required>
+                <datalist id="substrates-list">
+                  <option value="Tierra negra">
+                  <option value="Suelo arenoso">
+                  <option value="Suelo arcilloso">
+                  <option value="Suelo franco-limoso">
+                  <option value="Compost + Arena (1:1)">
+                </datalist>
+              </div>
+              <div class="field-group">
+                <label for="exp-seed">Tipo de Semilla *</label>
+                <input type="text" id="exp-seed" list="seeds-list" class="field-input" placeholder="Ej. Lentejas (Lens culinaris)" required>
+                <datalist id="seeds-list">
+                  <option value="Lentejas (Lens culinaris)">
+                  <option value="Fríjol (Phaseolus vulgaris)">
+                  <option value="Arveja (Pisum sativum)">
+                  <option value="Maíz (Zea mays)">
+                </datalist>
+              </div>
+              <div class="field-group">
+                <label for="exp-seeds-cup">Semillas por Vaso *</label>
+                <input type="number" id="exp-seeds-cup" class="field-input" min="1" step="1" value="3" required>
+              </div>
+              <div class="field-group">
+                <label for="exp-volume">Volumen Agua / Efluente (ml) *</label>
+                <input type="number" id="exp-volume" class="field-input" min="1" step="1" value="250" required>
+              </div>
+              <div class="field-group">
+                <label for="exp-agent">Reactivo / Efluente</label>
+                <input type="text" id="exp-agent" class="field-input" value="NaCl" placeholder="Ej. NaCl">
+              </div>
+              <div class="field-group">
+                <label for="exp-concentration">Concentración del Reactivo (%) *</label>
+                <input type="number" id="exp-concentration" class="field-input" min="0" step="0.05" value="2.0" required>
+              </div>
+            </div>
+
+            <!-- Tabla dinámica de réplicas -->
+            <div class="dynamic-table-actions">
+              <div>
+                <strong style="font-size:0.9rem;">Réplicas (Vasos) y Cálculo Automático en Tiempo Real</strong>
+                <div class="text-xs text-muted">Si la masa en PMP queda vacía, se reportará automáticamente como N/D.</div>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:0.45rem;">
+                <button type="button" id="btn-add-control" class="btn btn-sm btn-outline">+ Vaso Control</button>
+                <button type="button" id="btn-add-stress" class="btn btn-sm btn-outline">+ Vaso Estrés</button>
+                <button type="button" id="btn-add-6-template" class="btn btn-sm btn-primary-soft">Plantilla 6 Vasos (3+3)</button>
+              </div>
+            </div>
+
+            <div class="table-scroll" style="border:1px solid var(--border-color); border-radius:12px;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Vaso</th>
+                    <th>Tratamiento</th>
+                    <th class="num-col">M<sub>vaso</sub> (g)</th>
+                    <th class="num-col">M<sub>suelo</sub> (g)</th>
+                    <th class="num-col">M<sub>1h/2h</sub> (g)</th>
+                    <th class="num-col">M<sub>24h</sub> (g)</th>
+                    <th class="center-col">Germinadas</th>
+                    <th class="num-col">M<sub>PMP</sub> (g, opc.)</th>
+                    <th>Nota</th>
+                    <th class="num-col">M<sub>inicial</sub></th>
+                    <th class="num-col">CC (g/ml)</th>
+                    <th class="num-col">%CC</th>
+                    <th class="num-col">V<sub>infil.</sub> (ml)</th>
+                    <th class="center-col">%G</th>
+                    <th class="center-col">%PMP</th>
+                    <th>Estado</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="draft-replicates-body"></tbody>
+              </table>
+            </div>
+
+            <!-- Promedios en tiempo real por grupo -->
+            <div id="draft-live-summary" class="live-summary-grid"></div>
+
+            <!-- Observaciones y Conclusiones -->
+            <div class="field-group" style="margin-top:1.15rem;">
+              <label for="exp-observations">Observaciones y Conclusiones del Experimento</label>
+              <textarea id="exp-observations" class="field-textarea" rows="3" placeholder="Describe comportamiento del drenaje, presencia de radículas, anomalías o conclusiones ecotoxicológicas..."></textarea>
+            </div>
+
+            <!-- Subida de Fotos del Proceso -->
+            <div style="margin-top:1.25rem;">
+              <label style="font-size:0.8rem; font-weight:700; color:var(--text-secondary);">Fotografías del Proceso (JPG, PNG o WEBP)</label>
+              <div id="photo-dropzone" class="dropzone" tabindex="0" role="button" aria-label="Subir fotografías del experimento">
+                <div class="dropzone-title">Arrastra y suelta tus fotos aquí o haz clic para seleccionar archivos</div>
+                <div class="dropzone-sub">Puedes subir una o múltiples imágenes y añadir un título/descripción a cada una.</div>
+                <input type="file" id="photo-file-input" class="hidden" accept="image/jpeg,image/png,image/webp" multiple>
+              </div>
+              <div id="draft-photos-grid" class="photos-staging-grid"></div>
+            </div>
+
+            <div class="form-footer-actions">
+              <button type="button" id="btn-reset-form" class="btn btn-outline">Limpiar formulario</button>
+              <button type="submit" id="btn-save-experiment" class="btn btn-primary">Guardar Experimento</button>
+            </div>
+          </form>
+        </div>
+
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- PESTAÑA 6: REFERENCIAS (FORMATO IEEE)                     -->
+      <!-- ========================================================= -->
+      <section id="panel-referencias" class="tab-panel">
+        <div class="card" style="max-width:980px; margin:0 auto;">
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem; border-bottom:1px solid var(--border-color); padding-bottom:0.85rem;">
+            <div>
+              <h2 class="card-title">Referencias Bibliográficas y Científicas (Formato IEEE)</h2>
+              <p class="card-subtitle">Fuentes oficiales de la Guía de Práctica 03 y literatura científica arbitrada que sustenta los cálculos, resultados e interpretación ecotoxicológica.</p>
+            </div>
+            <button type="button" id="btn-copy-ieee" class="btn btn-sm btn-primary-soft">
+              Copiar citas en formato IEEE
+            </button>
+          </div>
+
+          <h3 class="ref-section-title">A. Bibliografía Oficial de la Guía de Laboratorio</h3>
+          <ol class="ieee-list">
+            <li id="ref-1" class="ieee-item">
+              <span class="ieee-num">[1]</span>
+              <div class="ieee-body">
+                T. Audesirk, B. E. Byers, V. Campos Olguín, and G. Audesirk, <em>Biología: La vida en la Tierra con fisiología</em>, 10th ed. Ciudad de México, México: Pearson Educación, 2017.
+                <span class="ieee-role">Sustento: Fisiología del transporte hídrico vegetal, ósmosis, turgencia celular y marchitez.</span>
+              </div>
+            </li>
+            <li id="ref-2" class="ieee-item">
+              <span class="ieee-num">[2]</span>
+              <div class="ieee-body">
+                N. C. Brady and R. R. Weil, <em>The Nature and Properties of Soils</em>, 15th ed. Hoboken, NJ, USA: Pearson, 2016.
+                <span class="ieee-role">Sustento: Relación textura-porosidad, Capacidad de Campo (−0.033 MPa), Punto de Marchitez Permanente (−1.5 MPa) y salinidad edáfica.</span>
+              </div>
+            </li>
+            <li id="ref-3" class="ieee-item">
+              <span class="ieee-num">[3]</span>
+              <div class="ieee-body">
+                N. A. Campbell and J. B. Reece, <em>Biología</em>, 7th ed. Madrid, España: Editorial Médica Panamericana, 2007.
+                <span class="ieee-role">Sustento: Potencial hídrico, potencial osmótico (Ψ<sub>s</sub>) y respuesta celular al estrés hídrico y salino.</span>
+              </div>
+            </li>
+            <li id="ref-4" class="ieee-item">
+              <span class="ieee-num">[4]</span>
+              <div class="ieee-body">
+                S. Freeman, <em>Biología</em>, 5th ed. Madrid, España: Pearson Educación, 2014.
+                <span class="ieee-role">Sustento: Germinación seminal, imbibición y disrupción metabólica en angiospermas bajo estrés abiótico.</span>
+              </div>
+            </li>
+            <li id="ref-5" class="ieee-item">
+              <span class="ieee-num">[5]</span>
+              <div class="ieee-body">
+                D. Hillel, <em>Introduction to Environmental Soil Physics</em>. San Diego, CA, USA: Academic Press, 2004.
+                <span class="ieee-role">Sustento: Balance hídrico gravimétrico, infiltración, drenaje gravitacional libre y pérdidas evaporativas en microcosmos.</span>
+              </div>
+            </li>
+            <li id="ref-6" class="ieee-item">
+              <span class="ieee-num">[6]</span>
+              <div class="ieee-body">
+                D. Sadava, D. M. Hillis, H. C. Heller, and M. Berenbaum, <em>LIFE: The Science of Biology</em>, 10th ed. Sunderland, MA, USA: Sinauer Associates / MacMillan, 2012.
+                <span class="ieee-role">Sustento: Homeostasis osmótica, transporte iónico transmembrana y bioindicadores vegetales.</span>
+              </div>
+            </li>
+          </ol>
+
+          <h3 class="ref-section-title">B. Literatura Científica Arbitrada de Sustento Experimental</h3>
+          <ol class="ieee-list">
+            <li id="ref-7" class="ieee-item">
+              <span class="ieee-num">[7]</span>
+              <div class="ieee-body">
+                R. Munns and M. Tester, “Mechanisms of Salinity Tolerance,” <em>Annual Review of Plant Biology</em>, vol. 59, no. 1, pp. 651–681, Jun. 2008.
+                <br><a class="ieee-doi" href="https://doi.org/10.1146/annurev.arplant.59.032607.092911" target="_blank" rel="noopener noreferrer">doi: 10.1146/annurev.arplant.59.032607.092911</a>
+                <span class="ieee-role">Sustento: Modelo bifásico de estrés por NaCl (fase osmótica inmediata que bloquea la absorción de agua y fase tóxica por acumulación de Na<sup>+</sup>/Cl<sup>−</sup>).</span>
+              </div>
+            </li>
+            <li id="ref-8" class="ieee-item">
+              <span class="ieee-num">[8]</span>
+              <div class="ieee-body">
+                N. A. Al-Quraan, M. Al-Sharbati, Y. Dababneh, and M. Al-Olabi, “Effect of temperature, salt and osmotic stresses on seed germination and chlorophyll contents in lentil (<em>Lens culinaris</em> Medik),” <em>Acta Horticulturae</em>, no. 1054, pp. 47–54, Oct. 2014.
+                <br><a class="ieee-doi" href="https://doi.org/10.17660/ActaHortic.2014.1054.4" target="_blank" rel="noopener noreferrer">doi: 10.17660/ActaHortic.2014.1054.4</a>
+                <span class="ieee-role">Sustento: Evidencia directa de inhibición de la germinación de <em>Lens culinaris</em> bajo estrés osmótico y salino con NaCl.</span>
+              </div>
+            </li>
+            <li id="ref-9" class="ieee-item">
+              <span class="ieee-num">[9]</span>
+              <div class="ieee-body">
+                M. Rahman, M. E. Ali, F. Alam, M. B. Banu, M. F. A. Anik, and M. A. H. Bhuiyan, “Effect of Arbuscular Mycorrhizal Fungi on Germination, Nodulation and Sporulation of Lentil (<em>Lens culinaris</em>) at Different NaCl Levels,” <em>Bangladesh Journal of Microbiology</em>, vol. 34, no. 2, pp. 73–81, Jan. 2019.
+                <br><a class="ieee-doi" href="https://doi.org/10.3329/bjm.v34i2.39615" target="_blank" rel="noopener noreferrer">doi: 10.3329/bjm.v34i2.39615</a>
+                <span class="ieee-role">Sustento: Ensayo en suelo con concentraciones de 0% a 4% de NaCl que confirma la reducción severa (p &lt; 0.01) en germinación de lenteja desde el 2% NaCl.</span>
+              </div>
+            </li>
+            <li id="ref-10" class="ieee-item">
+              <span class="ieee-num">[10]</span>
+              <div class="ieee-body">
+                A. Muscolo, M. Sidari, U. Anastasi, C. Santonoceto, and A. Maggio, “Effect of PEG-induced drought stress on seed germination of four lentil genotypes,” <em>Journal of Plant Interactions</em>, vol. 9, no. 1, pp. 354–363, Jan. 2014.
+                <br><a class="ieee-doi" href="https://doi.org/10.1080/17429145.2013.835880" target="_blank" rel="noopener noreferrer">doi: 10.1080/17429145.2013.835880</a>
+                <span class="ieee-role">Sustento: Cuantifica cómo potenciales hídricos negativos limitan la imbibición y emergencia radicular en genotipos de lenteja (explicando el resultado del Vaso 3 frente a Vasos 1–2).</span>
+              </div>
+            </li>
+            <li id="ref-11" class="ieee-item">
+              <span class="ieee-num">[11]</span>
+              <div class="ieee-body">
+                P. Rengasamy and K. A. Olsson, “Sodicity and soil structure,” <em>Australian Journal of Soil Research</em>, vol. 29, no. 6, pp. 935–952, Dec. 1991.
+                <br><a class="ieee-doi" href="https://doi.org/10.1071/SR9910935" target="_blank" rel="noopener noreferrer">doi: 10.1071/SR9910935</a>
+                <span class="ieee-role">Sustento: Mecanismo fisicoquímico de dispersión coloidal por Na<sup>+</sup>, sellado de poros y alteración del drenaje observado en la anomalía del Vaso 6 (24.04% CC).</span>
+              </div>
+            </li>
+            <li id="ref-12" class="ieee-item">
+              <span class="ieee-num">[12]</span>
+              <div class="ieee-body">
+                F. J. Veihmeyer and A. H. Hendrickson, “Methods of Measuring Field Capacity and Permanent Wilting Percentage of Soils,” <em>Soil Science</em>, vol. 68, no. 1, pp. 75–94, Jul. 1949.
+                <br><a class="ieee-doi" href="https://doi.org/10.1097/00010694-194907000-00007" target="_blank" rel="noopener noreferrer">doi: 10.1097/00010694-194907000-00007</a>
+                <span class="ieee-role">Sustento: Criterio metodológico clásico que exige pérdida irreversible de turgencia foliar para determinar el PMP (justificando el reporte N/D al no formarse hojas).</span>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container footer-inner">
+      <span>Simulador Académico — Práctica de Laboratorio 03: Capacidad de Campo, PMP y Ecotoxicología</span>
+      <span>Biología para Ingenieros • Almacenamiento local persistente con soporte de galería</span>
+    </div>
+  </footer>
+
+  <!-- Modal Lightbox para Fotografías -->
+  <div id="lightbox-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Vista ampliada de fotografía">
+    <div id="lightbox-backdrop" class="modal-backdrop"></div>
+    <div class="lightbox-card">
+      <div class="lightbox-header">
+        <span id="lightbox-counter">1 / 1</span>
+        <button type="button" id="lightbox-close" class="btn btn-xs btn-outline">Cerrar (Esc)</button>
+      </div>
+      <div class="lightbox-stage">
+        <img id="lightbox-img" src="" alt="Fotografía ampliada">
+      </div>
+      <div class="lightbox-footer">
+        <span id="lightbox-caption"></span>
+        <div style="display:flex; gap:0.45rem;">
+          <button type="button" id="lightbox-prev" class="btn btn-xs btn-outline">◀ Anterior</button>
+          <button type="button" id="lightbox-next" class="btn btn-xs btn-outline">Siguiente ▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmación de Eliminación -->
+  <div id="delete-confirm-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Confirmar eliminación">
+    <div id="delete-modal-backdrop" class="modal-backdrop"></div>
+    <div class="modal-card">
+      <h3 style="margin:0 0 0.5rem; font-size:1.08rem;">¿Eliminar experimento guardado?</h3>
+      <p style="margin:0 0 1rem; font-size:0.86rem; color:var(--text-secondary);">
+        Esta acción eliminará permanentemente el experimento <strong id="delete-modal-exp-name"></strong> y sus fotografías adjuntas de este navegador.
+      </p>
+      <div style="display:flex; justify-content:flex-end; gap:0.6rem;">
+        <button type="button" id="delete-modal-cancel" class="btn btn-sm btn-outline">Cancelar</button>
+        <button type="button" id="delete-modal-confirm" class="btn btn-sm btn-danger">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenedor de Notificaciones Toast -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts locales (sin dependencias externas rotas) -->
+  <script src="vendor/chart.umd.min.js"></script>
+  <script src="js/calculations.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/simulator.js"></script>
+  <script src="js/experiments.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
